@@ -17,9 +17,10 @@ MOSI  =   19             # 6
 MISO  =   21             # 8
 CS    =   24             # 10
 
+
 import RPi.GPIO as GPIO
 import time
-import sys
+import os, sys
 
 CS_ENABLE = GPIO.LOW
 CS_DISABLE = GPIO.HIGH
@@ -49,6 +50,7 @@ CHIP_ID = [0] * 5
 
 def init_gpios():
     GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
     GPIO.setup(RESET, GPIO.OUT, initial=GPIO.LOW)
     GPIO.setup(PROG, GPIO.OUT, initial=GPIO.HIGH)
 
@@ -266,7 +268,8 @@ def program_Device_FAST(): #Takes up to 1min
     spi_transfer(0x00)
     set_cs(CS_DISABLE)
 
-    with open("/home/pi/Desktop/NRF/boot24lu1p-f32_padded.bin", "rb") as f:
+    binPath = '{}/{}'.format(os.path.dirname(os.path.realpath(__file__)), 'watchman_dongle_combined.bin')
+    with open(binPath, "rb") as f:
         byte = f.read(1)
         num = 0
         adr = 0
@@ -308,7 +311,8 @@ def program_Device_FAST(): #Takes up to 1min
 
 def program_Device_FULL(): #Takes up to 12min
     print("Programming Device... (Full Image)")
-    with open("/home/pi/Desktop/NRF/boot24lu1p-f32_padded.bin", "rb") as f:
+    binPath = '{}/{}'.format(os.path.dirname(os.path.realpath(__file__)), 'watchman_dongle_combined.bin')
+    with open(binPath, "rb") as f:
         byte = f.read(1)
         num = 0
         while byte:
@@ -342,7 +346,7 @@ def program_Device_FULL(): #Takes up to 12min
     print("Programming Finished...")
 
 if __name__ == "__main__":
-    print("nRF24LU1P-F32 Flasher (c) by Roman Gassmann")
+    print("nRF24LU1P-F32 Flasher (c) by Roman Gassmann, Modified by ShiroSaki")
     print("Programming the full image will take up to 12min!\nProgramming just the Boot LDR will take just 1min.")
     eingabe = 2
     while (eingabe != '0') and (eingabe != '1') :
